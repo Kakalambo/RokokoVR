@@ -23,7 +23,16 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
         roomOptions.BroadcastPropsChangeToAll = true;
 
 #if UNITY_EDITOR
-        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+
+        if (FindObjectOfType<ModeController>().mode == ModeController.Mode.Server)
+        {
+            PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
+        }
+        else
+        {
+            PhotonNetwork.JoinRoom("Room 1");
+        }
+        
         return;
 #endif
 

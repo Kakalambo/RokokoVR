@@ -8,7 +8,7 @@ using Wave.Essence.Hand.Model;
 using Wave.Essence.Hand;
 
 [RequireComponent(typeof(PhotonView))]
-public class NetworkPlayer : MonoBehaviourPun
+public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 {
     [Header("GameObjects")]
     [SerializeField] private GameObject HandMeshL;
@@ -27,14 +27,15 @@ public class NetworkPlayer : MonoBehaviourPun
     [SerializeField] private ParticleSystem particleR;
     [SerializeField] private GameObject DrawIndicatorPrefab;
     private int oldID;
-    private Vector3 playerColor;
+    private Vector3 playerColor =  new Vector3(255,255,255);
     private DrawIndicator drawIndicator;
+    public SpawnPlace spawnPlace{ get; set; }
 
     public bool canDraw { get; set; } = true;
     [SerializeField] private Transform HandLDrawTranform;
     [SerializeField] private Transform HandRDrawTranform;
 
-    public PlayerGroup group { get; set; }
+    public PlayerGroup group;
 
     private PhotonView thisphotonView;
     private string handStateL;
@@ -45,6 +46,7 @@ public class NetworkPlayer : MonoBehaviourPun
     {
         GetVariables();
         SetupForClient(thisphotonView.IsMine);
+
     }
 
     void GetVariables()
@@ -57,7 +59,7 @@ public class NetworkPlayer : MonoBehaviourPun
     {
         if (this.photonView.IsMine)
         {
-            //group = playerController.PlayerGroups[Random.Range(0, playerController.PlayerGroups.Length)];
+            group = spawnPlace.group;
             playerColor = new Vector3( group.GroupColor.r, group.GroupColor.g, group.GroupColor.b);
             thisphotonView.RPC("SetupForGroup", RpcTarget.All,  group.GroupID, group.GroupColor.r, group.GroupColor.g, group.GroupColor.b, group.GroupColor.a);
         }
@@ -107,8 +109,8 @@ public class NetworkPlayer : MonoBehaviourPun
                 smr.enabled = false;
             }
 
-            ParticleMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
-            ParticleMeshR.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+            ParticleMeshL.GetComponent<SkinnedMeshRenderer>().enabled = false;
+            ParticleMeshR.GetComponent<SkinnedMeshRenderer>().enabled = false;
             PlayerIndicator.SetActive(false);
         }
     }
@@ -194,7 +196,7 @@ public class NetworkPlayer : MonoBehaviourPun
     // Left hand
       if(!particleL.isPlaying)
         {
-            if (canDraw && handStateL == "Five")
+            if (canDraw && handStateL == "IndexUp")
             {
                 thisphotonView.RPC("SetParticleSystemL", RpcTarget.All, true);
             }
@@ -202,7 +204,7 @@ public class NetworkPlayer : MonoBehaviourPun
 
       else if (particleL.isPlaying)
         {
-            if (!canDraw || handStateL != "Five")
+            if (!canDraw || handStateL != "IndexUp")
             {
                 thisphotonView.RPC("SetParticleSystemL", RpcTarget.All, false);
             }
@@ -211,7 +213,7 @@ public class NetworkPlayer : MonoBehaviourPun
         // Right hand
         if (!particleR.isPlaying)
         {
-            if (canDraw && handStateR == "Five")
+            if (canDraw && handStateR == "IndexUp")
             {
                 thisphotonView.RPC("SetParticleSystemR", RpcTarget.All, true);
             }
@@ -219,7 +221,7 @@ public class NetworkPlayer : MonoBehaviourPun
 
         else if (particleR.isPlaying)
         {
-            if (!canDraw || handStateR != "Five")
+            if (!canDraw || handStateR != "IndexUp")
             {
                 thisphotonView.RPC("SetParticleSystemR", RpcTarget.All, false);
             }
@@ -236,7 +238,7 @@ public class NetworkPlayer : MonoBehaviourPun
         }
         else
         {
-            particleL.Stop();
+            particleL.Pause();
         }
     }
 
@@ -250,7 +252,7 @@ public class NetworkPlayer : MonoBehaviourPun
         }
         else
         {
-            particleR.Stop();
+            particleR.Pause();
         }
     }
 
@@ -374,7 +376,7 @@ public class NetworkPlayer : MonoBehaviourPun
             if (oldID != group.GroupID)
             {
                 oldID = group.GroupID;
-                SetupForGroup(group.GroupID, playerColor.x, playerColor.y, this.playerColor.z, 255);
+                //SetupForGroup(group.GroupID, this.playerColor.x, this.playerColor.y, this.playerColor.z, 255);
             }
         }
     }

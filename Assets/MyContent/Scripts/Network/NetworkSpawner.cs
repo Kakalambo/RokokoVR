@@ -10,6 +10,7 @@ public class NetworkSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        FindObjectOfType<ModeController>().SetUpForMode();
         SpawnNetworkPlayer();
     }
 
@@ -24,7 +25,7 @@ public class NetworkSpawner : MonoBehaviour
     {
 
 #if UNITY_EDITOR
-        //return;
+        return;
 #endif
 
 #if UNITY_ANDROID
@@ -32,6 +33,7 @@ public class NetworkSpawner : MonoBehaviour
         GameObject g = PhotonNetwork.Instantiate("PlayerCameraRig", spawnPlaces[count].transform.position, spawnPlaces[count].transform.rotation);
         NetworkPlayer n = g.GetComponent<NetworkPlayer>();
         n.group = spawnPlaces[count].group;
+        n.spawnPlace = spawnPlaces[count];
         n.SetupForGroupRPC();
 #endif
     }

@@ -2199,8 +2199,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandMeshL: {fileID: 7440274094238829001}
   HandMeshR: {fileID: 7440274094132407605}
-  ParticleMeshL: {fileID: 6003571340979580355}
-  ParticleMeshR: {fileID: 3666207585723511890}
+  ParticleMeshL: {fileID: 5026695717412379000}
+  ParticleMeshR: {fileID: 3847494857691150044}
   HandTransforms: {fileID: 7440274093025456815}
   Camera: {fileID: 7440274093981211278}
   PlayerModel: {fileID: 5460959948590810749}
@@ -2209,8 +2209,9 @@ MonoBehaviour:
   particleL: {fileID: 7912974496927109827}
   particleR: {fileID: 2347135109245943915}
   DrawIndicatorPrefab: {fileID: 1933482316349424441, guid: e1b3351a3561f4f46a74fd57a6194db0, type: 3}
-  HandLDrawTranform: {fileID: 7440274094603694923}
-  HandRDrawTranform: {fileID: 7440274094938361100}
+  HandLDrawTranform: {fileID: 7440274093699555490}
+  HandRDrawTranform: {fileID: 7440274092984210355}
+  group: {fileID: 0}
 --- !u!1 &7440274093739919699
 GameObject:
   m_ObjectHideFlags: 0
@@ -6321,9 +6322,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae85747fcb8d9df4dadc4626b8085789, type: 3}
---- !u!1 &3666207585723511890 stripped
+--- !u!1 &3847494857691150044 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ae85747fcb8d9df4dadc4626b8085789, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8411429161687842849, guid: ae85747fcb8d9df4dadc4626b8085789, type: 3}
   m_PrefabInstance: {fileID: 4477023942102042883}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4889270076507514075
@@ -6469,9 +6470,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e458250315856f45af337fde46d132c, type: 3}
---- !u!1 &6003571340979580355 stripped
+--- !u!1 &5026695717412379000 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8e458250315856f45af337fde46d132c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1897133222196087274, guid: 8e458250315856f45af337fde46d132c, type: 3}
   m_PrefabInstance: {fileID: 6886445294616088722}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7440274093900314525
