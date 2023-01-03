@@ -25,6 +25,12 @@ public class DrawIndicator : MonoBehaviour
     {
 
         lineRenderers = GetComponentsInChildren<LineRenderer>();
+
+        foreach (LineRenderer l in lineRenderers)
+        {
+            l.widthMultiplier = 0;
+        }
+
         if (lineRenderers.Length > 0)
         {
             StartCoroutine(FollowLines());

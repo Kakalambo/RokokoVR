@@ -20,10 +20,18 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 100;
         roomOptions.IsVisible = true;
+        roomOptions.BroadcastPropsChangeToAll = true;
 
+#if UNITY_EDITOR
         PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
-        //PhotonNetwork.JoinLobby();
-        Debug.Log("Connected to Server");
+        return;
+#endif
+
+#if UNITY_ANDROID
+        PhotonNetwork.JoinRoom("Room 1");
+        return;
+#endif
+        PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
 
     }
 

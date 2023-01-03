@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 033485e0-140f-49c6-aaf9-8a403355bd3f
+    AppIdRealtime: 894c8059-5b48-41b0-a832-c6888ec7fc71
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
@@ -78,5 +78,5 @@ MonoBehaviour:
   - SpawnDrawindicatorForPlayers
   - SpawnDrawIndicatorForPlayers
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1
