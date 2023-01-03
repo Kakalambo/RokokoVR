@@ -37,7 +37,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        //base.OnConnectedToMaster();
+        base.OnJoinedLobby();
         //SceneManager.LoadScene("RokokoVR");
     }
 

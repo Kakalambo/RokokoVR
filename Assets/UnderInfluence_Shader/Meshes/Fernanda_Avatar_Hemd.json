@@ -1,0 +1,17 @@
+{
+    "rokoko_custom_names": true,
+    "version": 1,
+    "bones": {
+        "hip": [
+            "spine"
+        ],
+        "custom_bone_body1:spine": [
+            "body1:spine",
+            "spine.001"
+        ],
+        "head": [
+            "spine.006"
+        ]
+    },
+    "shapes": {}
+}

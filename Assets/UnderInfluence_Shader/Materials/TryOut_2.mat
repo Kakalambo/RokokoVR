@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8242042803330548109
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 0
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TryOut_2
+  m_Shader: {fileID: -6465566751694194690, guid: ef4c03eee96051e459fca7085c01c5c2, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _2_1_Lower_Tex:
+        m_Texture: {fileID: 2800000, guid: e939889a01ba73f4c9f41bb8d6d79d5f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _2_1_Upper_Tex:
+        m_Texture: {fileID: 2800000, guid: affd8fd4885cc6d49a7eddbe543ecff5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _2_2_Lower_Tex:
+        m_Texture: {fileID: 2800000, guid: e939889a01ba73f4c9f41bb8d6d79d5f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _2_2_Upper_Tex:
+        m_Texture: {fileID: 2800000, guid: d318139607269bf47a444986f0fc1487, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _2_3_Lower_Texture:
+        m_Texture: {fileID: 2800000, guid: d318139607269bf47a444986f0fc1487, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _3_Liquid_Texture:
+        m_Texture: {fileID: 2800000, guid: d4ef4bc2d26a6da4f8cb445d751dd198, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _2_1_Threshold: 2
+    - _2_2_Threshold: 0
+    - _2_4_Threshold: 0
+    - _2_Fader_1_2: 0
+    - _2_Fader_1_2_3_4: 0
+    - _2_Fader_3_4: 0
+    - _2_NoiseScale: 0.81889766
+    - _2_Threshold_Deform: 0
+    - _2_TimeSpeed: 0.8425197
+    - _3_Brightness: 2
+    - _3_Liquid_Scale: 3.63
+    - _3_Speed_Main_X: 0.1
+    - _3_Speed_Main_Y: 0.1
+    - _3_Threshold: -1
+    - _3_Tint_Offset: 1.7
+    - _BUILTIN_QueueControl: 0
+    - _BUILTIN_QueueOffset: 0
+    m_Colors:
+    - _2_1_Lower_Tex_Offset: {r: 3, g: 3, b: 0, a: 0}
+    - _2_1_Upper_Tex_Offset: {r: 1, g: 1, b: 0, a: 0}
+    - _2_2_Lower_Tex_Offset: {r: 3, g: 3, b: 0, a: 0}
+    - _2_2_Upper_Tex_Offset: {r: 5, g: 5, b: 0, a: 0}
+    - _2_3_Lower_Texture_Offset: {r: 5, g: 5, b: 0, a: 0}
+    - _2_4_Color_1: {r: 1, g: 0, b: 0, a: 1}
+    - _2_4_Color_2: {r: 0, g: 0, b: 1, a: 1}
+    - _3_Tint_End: {r: 0.6117647, g: 0.6745098, b: 0.7058823, a: 1}
+    - _3_Tint_Start: {r: 0.46666664, g: 0.517647, b: 0.8313726, a: 1}
+  m_BuildTextureStacks: []

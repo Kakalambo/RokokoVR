@@ -42,6 +42,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             this.photonView.RPC("SpawnDrawIndicatorForPlayers", RpcTarget.All);
         }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, true);
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
+        }
     }
 
     
@@ -80,5 +88,18 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     private void SpawnDrawIndicatorForPlayers()
     {
         OwningPlayer.SpawnDrawIndicator();
+    }
+
+    [PunRPC]
+    private void ShowHandsForPlayers(bool show)
+    {
+        if(show)
+        {
+            OwningPlayer.ShowPlayerHands();
+        }
+        else
+        {
+            OwningPlayer.HidePlayerHands();
+        } 
     }
 }

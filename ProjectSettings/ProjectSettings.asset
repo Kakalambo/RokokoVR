@@ -135,7 +135,11 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: -2850974376932031820, guid: 2457e5b23c94b9d4a8b58a0dca40ea95, type: 2}
+  - {fileID: 11400000, guid: 2a50a191d07dfe247933ed95c25574a9, type: 2}
+  - {fileID: 5371182413630604825, guid: 4f2a7772cf57f444da9a89af9f2834d7, type: 2}
+  - {fileID: 11400000, guid: 8d07ef3933408814ca2a0c622b0dcb87, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -822,7 +826,13 @@ PlayerSettings:
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  qualitySettingsNames: []
+  qualitySettingsNames:
+  - Very Low
+  - Low
+  - Medium
+  - High
+  - Very High
+  - Ultra
   projectName: 
   organizationId: 
   cloudEnabled: 0

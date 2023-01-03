@@ -17,11 +17,13 @@ public class SceneClient : MonoBehaviourPunCallbacks, IPunObservable
     private float Direct_Intense2;
     private float Direct_Intense1;
     private float AudioVisFade;
-
-    public int Skychange = 0;
+    private float Letter_Metallic;
+    private float Letter_Smoothness;
+    
     public Material SkyboxMaterial1;
     public Material SkyboxMaterial2;
     private Material SkyboxGame;
+    public Material Letters;
 
 
     // Start is called before the first frame update
@@ -40,19 +42,8 @@ public class SceneClient : MonoBehaviourPunCallbacks, IPunObservable
         Direct1.intensity = Direct_Intense1;
         Direct2.intensity = Direct_Intense2;
         AudioVis.transform.localScale = new Vector3(AudioVisFade, AudioVisFade, AudioVisFade);
-
-
-        if (Skychange == 0)
-        {
-            SkyboxGame = SkyboxMaterial2;
-
-        }
-        if (Skychange == 1)
-        {
-            SkyboxGame = SkyboxMaterial1;
-
-        }
-       
+        Letters.SetFloat("_Metallic",Letter_Metallic);
+        Letters.SetFloat("_Glossiness",Letter_Smoothness);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -63,7 +54,8 @@ public class SceneClient : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(Direct_Intense1);
             stream.SendNext(Direct_Intense2);
             stream.SendNext(AudioVisFade);
-            stream.SendNext(Skychange);
+            stream.SendNext(Letter_Metallic);
+            stream.SendNext(Letter_Smoothness);
         }
         else
         {
@@ -71,9 +63,8 @@ public class SceneClient : MonoBehaviourPunCallbacks, IPunObservable
             this.Direct_Intense1 = (float)stream.ReceiveNext();
             this.Direct_Intense2 = (float)stream.ReceiveNext();
             this.AudioVisFade = (float)stream.ReceiveNext();
-            this.Skychange = (int)stream.ReceiveNext();
-
+            this.Letter_Metallic = (float)stream.ReceiveNext();
+            this.Letter_Smoothness = (float)stream.ReceiveNext();
         }
-
     }
 }

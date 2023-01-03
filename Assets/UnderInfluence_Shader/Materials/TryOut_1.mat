@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Deformation_1
+  m_Name: TryOut_1
   m_Shader: {fileID: -6465566751694194690, guid: fabf3083f19af014da7e4243274c94fe, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -38,7 +38,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _1_Upper_Tex:
-        m_Texture: {fileID: 2800000, guid: 18ae2624b11fcd146a3b54edf6f73dc7, type: 3}
+        m_Texture: {fileID: 2800000, guid: affd8fd4885cc6d49a7eddbe543ecff5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _2_Lower_Tex:
@@ -73,9 +73,9 @@ Material:
     - _3_Liquid_Scale: 3.63
     - _3_Speed_Main_X: 0.1
     - _3_Speed_Main_Y: 0.1
-    - _3_Threshold: 1.16
+    - _3_Threshold: 2
     - _3_Tint_Offset: 1.7
-    - _4_Threshold: 0.45
+    - _4_Threshold: 0
     - _4_Tint_Offset: 1.7
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0

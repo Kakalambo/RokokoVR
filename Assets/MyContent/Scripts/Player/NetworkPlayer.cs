@@ -334,13 +334,13 @@ public class NetworkPlayer : MonoBehaviourPun
     public void ShowPlayerHands()
     {
         HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
-        HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+        HandMeshR.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
     }
 
     public void HidePlayerHands()
     {
         HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
-        HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+        HandMeshR.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
     }
 
     public void SpawnDrawIndicator()
