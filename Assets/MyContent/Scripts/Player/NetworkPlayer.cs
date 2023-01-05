@@ -29,7 +29,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     private int oldID;
     private Vector3 playerColor =  new Vector3(255,255,255);
     private DrawIndicator drawIndicator;
-    public SpawnPlace spawnPlace{ get; set; }
+    public SpawnPlace spawnPlace{ get; set;}
 
     public bool canDraw { get; set; } = true;
     [SerializeField] private Transform HandLDrawTranform;
@@ -55,11 +55,11 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         playerController = FindObjectOfType<PlayerController>();
     }
 
-    public void SetupForGroupRPC()
+    public void SetupForGroupRPC(PlayerGroup newGroup)
     {
         if (this.photonView.IsMine)
         {
-            group = spawnPlace.group;
+            group = newGroup;
             playerColor = new Vector3( group.GroupColor.r, group.GroupColor.g, group.GroupColor.b);
             thisphotonView.RPC("SetupForGroup", RpcTarget.All,  group.GroupID, group.GroupColor.r, group.GroupColor.g, group.GroupColor.b, group.GroupColor.a);
         }
@@ -68,7 +68,10 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void SetupForGroup(int gID, float r, float g, float b, float a)
     {
-
+        if (group == null)
+        {
+            group = new PlayerGroup();
+        }
         group.GroupColor = new Color(r, g, b, a);
         group.GroupID = gID;
         particleL.startColor = group.GroupColor;
@@ -78,7 +81,11 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         {
             renderer.material.color = group.GroupColor;
         }
-        PlayerIndicator.GetComponent<Renderer>().material.color = group.GroupColor;
+
+        ParticleMeshL.GetComponent<Renderer>().material.color = group.GroupColor;
+        ParticleMeshR.GetComponent<Renderer>().material.color = group.GroupColor;
+
+        PlayerIndicator.GetComponent<Renderer>().material.color = new Color(r, g, b, .1f); ;
     }
 
     private void SetupForClient(bool isOwner)
@@ -116,7 +123,6 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     }
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -133,6 +139,9 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     {
         PlayerModel.transform.position = Camera.transform.position;
         PlayerModel.transform.rotation = Quaternion.Euler(0, Camera.transform.rotation.eulerAngles.y, 0);
+
+        Vector3 pos = PlayerIndicator.transform.position;
+        PlayerIndicator.transform.position = new Vector3(pos.x, 0, pos.z);
         //PlayerModelHead.transform.rotation = Quaternion.Euler(Camera.transform.rotation.eulerAngles);
     }
 
@@ -143,7 +152,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
 
         handStateL = WXRGestureHand.GetSingleHandGesture(true);
-        handStateR = WXRGestureHand.GetSingleHandGesture(false);
+        handStateR = WXRGestureHand.GetSingleHandGesture(false);;
 
         CheckForDraw();
     }
@@ -151,6 +160,11 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     public void DisableOrEnableParticlesRPC(bool canIDraw)
     {
         thisphotonView.RPC("DisableOrEnableParticles", RpcTarget.All, canIDraw);
+    }
+
+    public void PlayOrPauseParticlesRPC(bool play)
+    {
+        thisphotonView.RPC("PlayOrPauseParticleSystems", RpcTarget.All, play);
     }
 
     [PunRPC]
@@ -231,28 +245,50 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void SetParticleSystemL(bool isplaying)
     {
-        particleL.startColor = new Color(playerColor.x, playerColor.y, playerColor.z, 255);
         if (isplaying)
         {
             particleL.Play();
+            var emissionL = particleL.emission;
+            emissionL.enabled = true;
         }
         else
         {
-            particleL.Pause();
+            particleL.Stop();
+            var emissionL = particleL.emission;
+            emissionL.enabled = false;
         }
     }
 
     [PunRPC]
     private void SetParticleSystemR(bool isplaying)
     {
-        particleR.startColor = new Color(playerColor.x, playerColor.y, playerColor.z, 255);
         if (isplaying)
         {
             particleR.Play();
+            var emissionR = particleL.emission;
+            emissionR.enabled = true;
         }
         else
         {
+            particleR.Stop();
+            var emissionR = particleL.emission;
+            emissionR.enabled = false;
+        }
+    }
+
+    [PunRPC]
+    private void PlayOrPauseParticleSystems(bool play)
+    {
+        if (play)
+        {
+            particleR.Play();
+            particleL.Play();
+        }
+        else
+        {
+            canDraw = false;
             particleR.Pause();
+            particleL.Pause();
         }
     }
 
@@ -352,11 +388,12 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             drawIndicator.DestroyIndicator(0);
         }
 
-        GameObject g = Instantiate(DrawIndicatorPrefab, Camera.transform.position, Camera.transform.rotation);
+        GameObject g = Instantiate(DrawIndicatorPrefab, Camera.transform.position, Camera.transform.rotation, Camera.transform);
         drawIndicator = g.GetComponent<DrawIndicator>();
 
         drawIndicator.transform.localPosition += new Vector3(0, -0.2f, 1) * .5f;
         drawIndicator.transform.localRotation = Quaternion.Euler(0, 180, 0);
+        drawIndicator.transform.parent = null;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

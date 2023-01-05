@@ -33,9 +33,9 @@ public class NetworkSpawner : MonoBehaviour
         int count = FindObjectsOfType<NetworkPlayer>().Length;
         GameObject g = PhotonNetwork.Instantiate("PlayerCameraRig", spawnTransform.position, spawnTransform.rotation);
         NetworkPlayer n = g.GetComponent<NetworkPlayer>();
-        n.group = spawnPlaces[count].group;
-        n.spawnPlace = spawnPlaces[count];
-        n.SetupForGroupRPC();
+        SpawnPlace s = spawnPlaces[count];
+        n.spawnPlace = s;
+        n.SetupForGroupRPC(s.group);
 #endif
     }
 }

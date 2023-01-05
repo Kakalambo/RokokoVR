@@ -38,6 +38,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, true);
         }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, false);
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, true);
+        }
         if (Input.GetKeyDown(KeyCode.I))
         {
             this.photonView.RPC("SpawnDrawIndicatorForPlayers", RpcTarget.All);
@@ -63,6 +71,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             this.canDraw = (bool)stream.ReceiveNext();
         }
+    }
+
+    [PunRPC]
+    private void PausePlayerParticleSystems(bool play)
+    {
+        OwningPlayer.PlayOrPauseParticlesRPC(play);
     }
 
     [PunRPC]

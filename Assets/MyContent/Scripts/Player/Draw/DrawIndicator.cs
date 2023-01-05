@@ -6,6 +6,7 @@ public class DrawIndicator : MonoBehaviour
 {
 
     [SerializeField] private float drawStepsBetweenPoints = 1000;
+    [SerializeField] private float drawSpeed = 2;
     [SerializeField]private ParticleSystem particle;
     private LineRenderer[] lineRenderers;
     // Start is called before the first frame update
@@ -53,7 +54,7 @@ public class DrawIndicator : MonoBehaviour
                 float distance = Vector3.Distance(pos1, pos2);
                 int newDrawCount = Mathf.RoundToInt(drawStepsBetweenPoints * distance);
 
-                for (int i = 0; i < newDrawCount; i ++)
+                for (int i = 0; i < newDrawCount; i += Mathf.RoundToInt(drawSpeed))
                 {
 
                     t = (float)i / newDrawCount;
