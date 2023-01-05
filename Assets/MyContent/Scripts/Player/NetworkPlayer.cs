@@ -25,9 +25,15 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [Header("Drawing")]
     [SerializeField] private ParticleSystem particleL;
     [SerializeField] private ParticleSystem particleR;
-    [SerializeField] private GameObject DrawIndicatorPrefab;
+    [SerializeField] private GameObject[] DrawIndicatorPrefabs;
+    [SerializeField] public int DrawIndicatorIndex = 0;
+    public PlayerGroup[] PlayerGroups;
+    [SerializeField] public int GroupIndex = 0;
+
+    private bool isEmittingL = false;
+    private bool isEmittingR = false;
+
     private int oldID;
-    private Vector3 playerColor =  new Vector3(255,255,255);
     private DrawIndicator drawIndicator;
     public SpawnPlace spawnPlace{ get; set;}
 
@@ -37,7 +43,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
     public PlayerGroup group;
 
-    private PhotonView thisphotonView;
+    [HideInInspector]public PhotonView thisphotonView;
     private string handStateL;
     private string handStateR;
 
@@ -47,6 +53,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         GetVariables();
         SetupForClient(thisphotonView.IsMine);
 
+        particleL.Play();
+        particleR.Play();
     }
 
     void GetVariables()
@@ -55,25 +63,31 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         playerController = FindObjectOfType<PlayerController>();
     }
 
-    public void SetupForGroupRPC(PlayerGroup newGroup)
+    public void SetupForGroupRPC(PlayerGroup newGroup, bool isMaster = false)
     {
-        if (this.photonView.IsMine)
+        if (this.photonView.IsMine || isMaster)
         {
-            group = newGroup;
-            playerColor = new Vector3( group.GroupColor.r, group.GroupColor.g, group.GroupColor.b);
-            thisphotonView.RPC("SetupForGroup", RpcTarget.All,  group.GroupID, group.GroupColor.r, group.GroupColor.g, group.GroupColor.b, group.GroupColor.a);
+            thisphotonView.RPC("SetupForGroup", RpcTarget.All,  newGroup.GroupID);
         }
     }
 
-    [PunRPC]
-    private void SetupForGroup(int gID, float r, float g, float b, float a)
+
+    public void SetupNewDrawIndicaorRPC(int newDrawIndicatorIndex)
     {
-        if (group == null)
-        {
-            group = new PlayerGroup();
-        }
-        group.GroupColor = new Color(r, g, b, a);
-        group.GroupID = gID;
+        thisphotonView.RPC("SetupNewDrawIndicator", RpcTarget.All, newDrawIndicatorIndex);  
+    }
+
+    [PunRPC]
+    private void SetupNewDrawIndicator(int newDrawIndicatorIndex)
+    {
+        DrawIndicatorIndex = newDrawIndicatorIndex;
+    }
+
+    [PunRPC]
+    private void SetupForGroup(int gID)
+    {
+        GroupIndex = gID;
+        group = PlayerGroups[GroupIndex];
         particleL.startColor = group.GroupColor;
         particleR.startColor = group.GroupColor;
         Renderer[] modelChildrenRenderer = PlayerModel.transform.GetComponentsInChildren<Renderer>();
@@ -85,7 +99,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         ParticleMeshL.GetComponent<Renderer>().material.color = group.GroupColor;
         ParticleMeshR.GetComponent<Renderer>().material.color = group.GroupColor;
 
-        PlayerIndicator.GetComponent<Renderer>().material.color = new Color(r, g, b, .1f); ;
+        PlayerIndicator.GetComponent<Renderer>().material.color = new Color(group.GroupColor.r, group.GroupColor.g, group.GroupColor.b, .1f); ;
     }
 
     private void SetupForClient(bool isOwner)
@@ -118,7 +132,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
             ParticleMeshL.GetComponent<SkinnedMeshRenderer>().enabled = false;
             ParticleMeshR.GetComponent<SkinnedMeshRenderer>().enabled = false;
-            PlayerIndicator.SetActive(false);
+            PlayerIndicator.GetComponent<MeshRenderer>().enabled = false;
         }
     }
     void Start()
@@ -140,7 +154,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         PlayerModel.transform.position = Camera.transform.position;
         PlayerModel.transform.rotation = Quaternion.Euler(0, Camera.transform.rotation.eulerAngles.y, 0);
 
-        Vector3 pos = PlayerIndicator.transform.position;
+        Vector3 pos = PlayerModel.transform.position;
         PlayerIndicator.transform.position = new Vector3(pos.x, 0, pos.z);
         //PlayerModelHead.transform.rotation = Quaternion.Euler(Camera.transform.rotation.eulerAngles);
     }
@@ -148,11 +162,14 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     void UpdateHandGestures()
     {
         particleL.transform.position = HandLDrawTranform.position;
+        particleL.transform.rotation = Camera.transform.rotation;
+
         particleR.transform.position = HandRDrawTranform.position;
+        particleR.transform.rotation = Camera.transform.rotation;
 
 
         handStateL = WXRGestureHand.GetSingleHandGesture(true);
-        handStateR = WXRGestureHand.GetSingleHandGesture(false);;
+        handStateR = WXRGestureHand.GetSingleHandGesture(false);
 
         CheckForDraw();
     }
@@ -173,6 +190,9 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         canDraw = canIDraw;
         if (!canIDraw)
         {
+            isEmittingR = false;
+            isEmittingL = false;
+
             particleL.Play();
             particleR.Play();
             particleL.Stop();
@@ -188,6 +208,9 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         }
         else
         {
+            isEmittingR = true;
+            isEmittingL = true;
+
             particleL.Play();
             particleR.Play();
             var emissionL = particleL.emission;
@@ -205,10 +228,27 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             return;
         }
 
-        
+        if (canDraw && handStateL == "IndexUp")
+        {
+            thisphotonView.RPC("SetParticleSystemL", RpcTarget.All, true);
+        }
+        else if (!canDraw || handStateL != "IndexUp")
+        {
+            thisphotonView.RPC("SetParticleSystemL", RpcTarget.All, false);
+        }
 
-    // Left hand
-      if(!particleL.isPlaying)
+        if (canDraw && handStateR == "IndexUp")
+        {
+            thisphotonView.RPC("SetParticleSystemR", RpcTarget.All, true);
+        }
+        else if (!canDraw || handStateR != "IndexUp")
+        {
+            thisphotonView.RPC("SetParticleSystemR", RpcTarget.All, false);
+        }
+
+        return;
+        // Left hand
+        if (!particleL.isPlaying)
         {
             if (canDraw && handStateL == "IndexUp")
             {
@@ -216,7 +256,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             }
         }
 
-      else if (particleL.isPlaying)
+      else if (particleL.isPlaying )
         {
             if (!canDraw || handStateL != "IndexUp")
             {
@@ -224,6 +264,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             }
         }
 
+        
         // Right hand
         if (!particleR.isPlaying)
         {
@@ -233,7 +274,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             }
         }
 
-        else if (particleR.isPlaying)
+        else if (particleR.isPlaying )
         {
             if (!canDraw || handStateR != "IndexUp")
             {
@@ -245,34 +286,50 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void SetParticleSystemL(bool isplaying)
     {
+        var emissionL = particleL.emission;
+
         if (isplaying)
         {
-            particleL.Play();
-            var emissionL = particleL.emission;
-            emissionL.enabled = true;
+            if (!isEmittingL || !particleL.isPlaying)
+            {
+                //particleL.Play();
+                isEmittingL = true;
+                emissionL.enabled = true;
+            }
         }
         else
         {
-            particleL.Stop();
-            var emissionL = particleL.emission;
-            emissionL.enabled = false;
+            if (isEmittingL || particleL.isPlaying)
+            {
+                isEmittingL = false;
+                emissionL.enabled = false;
+            }
         }
     }
 
     [PunRPC]
     private void SetParticleSystemR(bool isplaying)
     {
+        var emissionR = particleR.emission;
+
         if (isplaying)
         {
-            particleR.Play();
-            var emissionR = particleL.emission;
-            emissionR.enabled = true;
+            if (!isEmittingR || !particleR.isPlaying)
+            {
+                //particleR.Play();
+                isEmittingR = true;
+                emissionR.enabled = true;
+            }
+            
         }
         else
         {
-            particleR.Stop();
-            var emissionR = particleL.emission;
-            emissionR.enabled = false;
+            if (isEmittingR || particleR.isPlaying)
+            {
+                isEmittingR = false;
+                emissionR.enabled = false;
+            }
+            
         }
     }
 
@@ -292,20 +349,19 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void FindAndHideOtherPlayers(bool HideGroup)
+    public void FindAndHideOtherPlayers(bool AlsoHideGroup)
     {
         NetworkPlayer[] allPlayers = FindObjectsOfType<NetworkPlayer>();
 
         foreach (NetworkPlayer nPlayer in allPlayers)
         {
-           
             if (!nPlayer.thisphotonView.IsMine)
             {
-                if (HideGroup)
+                if (AlsoHideGroup)
                 {
                     nPlayer.HidePlayer();
                 }
-                else if (nPlayer.group.GroupID != group.GroupID)
+                else if (nPlayer.GroupIndex != GroupIndex)
                 {
                     nPlayer.HidePlayer();
                 }
@@ -313,7 +369,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void FindAndShowOtherPlayers(bool ShowGroup)
+    public void FindAndShowOtherPlayers(bool AlsoShowOtherGroup)
     {
         NetworkPlayer[] allPlayers = FindObjectsOfType<NetworkPlayer>();
 
@@ -321,11 +377,13 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         {
             if (!nPlayer.thisphotonView.IsMine)
             {
-                if (ShowGroup)
+                if (AlsoShowOtherGroup)
                 {
+                    
                     nPlayer.ShowPlayer();
+                    
                 }
-                else if (nPlayer.group.GroupID != group.GroupID)
+                else if (nPlayer.GroupIndex == GroupIndex)
                 {
                     nPlayer.ShowPlayer();
                 }
@@ -371,14 +429,14 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
     public void ShowPlayerHands()
     {
-        HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
-        HandMeshR.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+        HandMeshL.SetActive(true);
+        HandMeshR.SetActive(true);
     }
 
     public void HidePlayerHands()
     {
-        HandMeshL.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
-        HandMeshR.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+        HandMeshL.SetActive(false);
+        HandMeshR.SetActive(false);
     }
 
     public void SpawnDrawIndicator()
@@ -388,7 +446,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             drawIndicator.DestroyIndicator(0);
         }
 
-        GameObject g = Instantiate(DrawIndicatorPrefab, Camera.transform.position, Camera.transform.rotation, Camera.transform);
+        GameObject g = Instantiate(DrawIndicatorPrefabs[DrawIndicatorIndex], Camera.transform.position, Camera.transform.rotation, Camera.transform);
         drawIndicator = g.GetComponent<DrawIndicator>();
 
         drawIndicator.transform.localPosition += new Vector3(0, -0.2f, 1) * .5f;
@@ -400,19 +458,19 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(playerColor);
-            stream.SendNext(canDraw);
-            stream.SendNext(group.GroupID);
+            //stream.SendNext(playerColor);
+            //stream.SendNext(canDraw);
+            //stream.SendNext(group.GroupID);
         }
         else
         {
-            this.playerColor = (Vector3)stream.ReceiveNext();
-            this.canDraw = (bool)stream.ReceiveNext();
-            this.group.GroupID = (int)stream.ReceiveNext(); 
+            //this.playerColor = (Vector3)stream.ReceiveNext();
+            //this.canDraw = (bool)stream.ReceiveNext();
+            //this.group.GroupID = (int)stream.ReceiveNext(); 
 
             if (oldID != group.GroupID)
             {
-                oldID = group.GroupID;
+               // oldID = group.GroupID;
                 //SetupForGroup(group.GroupID, this.playerColor.x, this.playerColor.y, this.playerColor.z, 255);
             }
         }

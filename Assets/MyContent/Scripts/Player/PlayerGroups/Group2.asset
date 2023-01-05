@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f3a4da96473b64a92f7bbb9eabf5a6, type: 3}
   m_Name: Group2
   m_EditorClassIdentifier: 
-  GroupID: 2
-  GroupColor: {r: 0.6505422, g: 0.501513, b: 0.9245283, a: 1}
+  GroupID: 1
+  GroupColor: {r: 0.66833055, g: 0.50980395, b: 0.8980392, a: 1}

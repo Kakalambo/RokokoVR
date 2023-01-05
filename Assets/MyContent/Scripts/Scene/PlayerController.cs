@@ -26,9 +26,17 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, true);
         }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, false);
+        }
         if (Input.GetKeyDown(KeyCode.S))
         {
             this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, true);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, false);
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -48,6 +56,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
+            UpgradeDrawIndicatorsToMasterClient();
             this.photonView.RPC("SpawnDrawIndicatorForPlayers", RpcTarget.All);
         }
         if (Input.GetKeyDown(KeyCode.L))
@@ -57,6 +66,10 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         if (Input.GetKeyDown(KeyCode.O))
         {
             this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            UpgradePlayerGroupsToMasterClient();
         }
     }
 
@@ -76,44 +89,97 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void PausePlayerParticleSystems(bool play)
     {
-        OwningPlayer.PlayOrPauseParticlesRPC(play);
+        if (OwningPlayer)
+        {
+            OwningPlayer.PlayOrPauseParticlesRPC(play);
+        }
     }
 
     [PunRPC]
     private void ChangeDrawModeForPlayers(bool canIDraw)
     {
-        OwningPlayer.DisableOrEnableParticlesRPC(canIDraw);
+        if (OwningPlayer)
+        {
+            OwningPlayer.DisableOrEnableParticlesRPC(canIDraw); ;
+        }   
     }
 
     [PunRPC]
     private void HideOtherPlayersFormOwningPlayer(bool HideGroup)
     {
-        OwningPlayer.FindAndHideOtherPlayers(HideGroup);
+        if (OwningPlayer)
+        {
+            OwningPlayer.FindAndHideOtherPlayers(HideGroup);
+        }   
     }
 
     [PunRPC]
     private void ShowOtherPlayersFormOwningPlayer(bool ShowGroup)
     {
-        OwningPlayer.FindAndShowOtherPlayers(ShowGroup);
+        if (OwningPlayer)
+        {
+            OwningPlayer.FindAndShowOtherPlayers(ShowGroup);
+        }  
     }
 
     
     [PunRPC]
     private void SpawnDrawIndicatorForPlayers()
     {
-        OwningPlayer.SpawnDrawIndicator();
+        if (OwningPlayer)
+        {
+            OwningPlayer.SpawnDrawIndicator();
+        }
     }
+
 
     [PunRPC]
     private void ShowHandsForPlayers(bool show)
     {
-        if(show)
+        if (OwningPlayer)
         {
-            OwningPlayer.ShowPlayerHands();
-        }
-        else
-        {
-            OwningPlayer.HidePlayerHands();
+            if (show)
+            {
+                OwningPlayer.ShowPlayerHands();
+            }
+            else
+            {
+                OwningPlayer.HidePlayerHands();
+            }
         } 
+    }
+
+
+    public void UpgradePlayerGroupsRPC()
+    {
+        this.photonView.RPC("UpgradePlayerGroups", RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void UpgradePlayerGroups()
+    {
+        if (OwningPlayer)
+        {
+            OwningPlayer.SetupForGroupRPC(OwningPlayer.PlayerGroups[OwningPlayer.GroupIndex]);
+        }
+    }
+
+
+    private void UpgradePlayerGroupsToMasterClient()
+    {
+        NetworkPlayer[] nPlayers = FindObjectsOfType<NetworkPlayer>();
+        foreach (NetworkPlayer n in nPlayers)
+        {
+            n.SetupForGroupRPC(n.PlayerGroups[n.GroupIndex], true);
+        }
+    }
+
+    private void UpgradeDrawIndicatorsToMasterClient()
+    {
+        NetworkPlayer[] nPlayers = FindObjectsOfType<NetworkPlayer>();
+        foreach (NetworkPlayer n in nPlayers)
+        {
+            n.SetupNewDrawIndicaorRPC(n.DrawIndicatorIndex);
+        }
     }
 }

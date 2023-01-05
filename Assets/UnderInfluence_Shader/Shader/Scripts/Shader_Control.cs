@@ -26,14 +26,7 @@ public class Shader_Control : MonoBehaviourPunCallbacks, IPunObservable
     private float local_deform;
     private float local_deform_time;
     private float local_deform_scale;
-
-    private float local_color_R1;
-    private float local_color_G1;
-    private float local_color_B1;
-    
-    private float local_color_R2;
-    private float local_color_G2;
-    private float local_color_B2;
+   
 
 
 
@@ -59,8 +52,6 @@ public class Shader_Control : MonoBehaviourPunCallbacks, IPunObservable
         EasyController.esconsend.Send_data(16,0);
         EasyController.esconsend.Send_data(17,0);
         EasyController.esconsend.Send_data(18,0);
-        local_color_G1 = 0f;
-        local_color_G2 = 0f;
     }
 
     // Update is called once per frame
@@ -178,34 +169,7 @@ public class Shader_Control : MonoBehaviourPunCallbacks, IPunObservable
                     gameObject.GetComponent<Renderer>().sharedMaterial.SetFloat("_2_Threshold_Deform", local_deform);
 
                 }
-
-                if (local_fade34 == 1)
-                {
-                    local_color_G1 = EasyController.escon.get_state(12, 0f, 1f);
-                    if (local_color_G1 == 1)
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_1", Color.yellow);
-                    }
-                    else
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_1", Color.red);
-
-                    }
-                    local_color_G2 = EasyController.escon.get_state(13, 0f, 1f);
-
-                    if (local_color_G2 == 1)
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_2", Color.green);
-                    }
-                    else
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_2", Color.blue);
-
-                    }
-                }
-            } 
-            
-            
+            }   
         }
     }
 
@@ -223,8 +187,7 @@ public class Shader_Control : MonoBehaviourPunCallbacks, IPunObservable
          stream.SendNext(local_4_threshold);
          stream.SendNext(local_deform_time);
          stream.SendNext(local_deform_scale);
-         stream.SendNext(local_color_G1);
-         stream.SendNext(local_color_G2);
+
 
  
         }
@@ -240,8 +203,6 @@ public class Shader_Control : MonoBehaviourPunCallbacks, IPunObservable
          this.local_4_threshold = (float)stream.ReceiveNext();
          this.local_deform_time = (float)stream.ReceiveNext();
          this.local_deform_scale = (float)stream.ReceiveNext();
-         this.local_color_G1 = (float)stream.ReceiveNext();
-         this.local_color_G2 = (float)stream.ReceiveNext();
 
         }
     }

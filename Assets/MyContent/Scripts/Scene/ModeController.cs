@@ -18,6 +18,12 @@ public class ModeController : MonoBehaviour
     {
 
 #if UNITY_EDITOR
+
+        if (mode == Mode.Stream)
+        {
+            return;
+        }
+
         if (mode == Mode.Client)
         {
             mode = Mode.Server;

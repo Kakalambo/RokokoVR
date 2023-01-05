@@ -26,14 +26,7 @@ public class Shader_Client : MonoBehaviourPunCallbacks, IPunObservable
     private float local_deform = 2f;
     private float local_deform_time = 0.5f;
     private float local_deform_scale = 4.5f;
-    
-    private float local_color_R1;
-    private float local_color_G1;
-    private float local_color_B1;
-    
-    private float local_color_R2;
-    private float local_color_G2;
-    private float local_color_B2;
+
 
 
     // Update is called once per frame
@@ -116,30 +109,6 @@ public class Shader_Client : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     gameObject.GetComponent<Renderer>().sharedMaterial.SetFloat("_2_Threshold_Deform", local_deform);
                 }
-
-                if (local_fade34 == 1)
-                {
-                    
-                    if (local_color_G1 == 1)
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_1", Color.yellow);
-                    }
-                    else
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_1", Color.red);
-
-                    }
-
-                    if (local_color_G2 == 1)
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_2", Color.green);
-                    }
-                    else
-                    {
-                        gameObject.GetComponent<Renderer>().sharedMaterial.SetColor("_2_4_Color_2", Color.blue);
-
-                    }
-                }
             }
         }
     }
@@ -158,8 +127,7 @@ public class Shader_Client : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(local_4_threshold);
             stream.SendNext(local_deform_time);
             stream.SendNext(local_deform_scale);
-            stream.SendNext(local_color_G1);
-            stream.SendNext(local_color_G2);
+
 
         }
         else
@@ -174,8 +142,6 @@ public class Shader_Client : MonoBehaviourPunCallbacks, IPunObservable
             this.local_4_threshold = (float)stream.ReceiveNext();
             this.local_deform_time = (float)stream.ReceiveNext();
             this.local_deform_scale = (float)stream.ReceiveNext();
-            this.local_color_G1 = (float)stream.ReceiveNext();
-            this.local_color_G2 = (float)stream.ReceiveNext();
 
         }
     }

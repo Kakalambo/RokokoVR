@@ -46,7 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a99d5bca3e3d34aae815faa7b68e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawStepsBetweenPoints: 500
+  drawStepsBetweenPoints: 1000
+  drawSpeed: 1
   particle: {fileID: 2062154695005205924}
 --- !u!1 &2385814716878584998
 GameObject:

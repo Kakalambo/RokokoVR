@@ -18,7 +18,10 @@ public class NetworkSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //SpawnNetworkPlayer();
+        }
     }
 
   
@@ -35,7 +38,7 @@ public class NetworkSpawner : MonoBehaviour
         NetworkPlayer n = g.GetComponent<NetworkPlayer>();
         SpawnPlace s = spawnPlaces[count];
         n.spawnPlace = s;
-        n.SetupForGroupRPC(s.group);
+        FindObjectOfType<PlayerController>().UpgradePlayerGroupsRPC();
 #endif
     }
 }

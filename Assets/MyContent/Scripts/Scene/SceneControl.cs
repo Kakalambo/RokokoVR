@@ -69,8 +69,8 @@ public class SceneControl : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(Direct_Intense1);
             stream.SendNext(Direct_Intense2);
             stream.SendNext(AudioVisFade);
-            stream.SendNext(Letter_Metallic);
-            stream.SendNext(Letter_Smoothness);
+           // stream.SendNext(Letter_Metallic);
+           // stream.SendNext(Letter_Smoothness);
         }
         else
         {
@@ -78,8 +78,8 @@ public class SceneControl : MonoBehaviourPunCallbacks, IPunObservable
             this.Direct_Intense1 = (float)stream.ReceiveNext();
             this.Direct_Intense2 = (float)stream.ReceiveNext();
             this.AudioVisFade = (float)stream.ReceiveNext();
-            this.Letter_Metallic = (float)stream.ReceiveNext();
-            this.Letter_Smoothness = (float)stream.ReceiveNext();
+          //  this.Letter_Metallic = (float)stream.ReceiveNext();
+           // this.Letter_Smoothness = (float)stream.ReceiveNext();
         }
     }
     
