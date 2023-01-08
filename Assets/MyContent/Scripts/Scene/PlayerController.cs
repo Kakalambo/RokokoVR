@@ -6,11 +6,19 @@ using Photon.Realtime;
 
 public class PlayerController : MonoBehaviourPun, IPunObservable
 {
-    public PlayerGroup[] PlayerGroups;
     public NetworkPlayer OwningPlayer;
-    public bool canDraw = false;
-    public bool canSeeGroup = false;
-    public bool canSeeAll = false;
+    
+
+    [Header("Player Variables")]
+    public bool ShowAllPlayers = true;
+    public bool ShowOwnGroup = true;
+    public bool ShowOtherGroup = true;
+    public bool SeeOwnHands = true;
+
+    [Header("Draw Variables")]
+    public bool CanDraw = true;
+    public bool PauseDraw = false;
+    public int DrawIndicatorCount = 0;
 
 
     // Start is called before the first frame update
@@ -78,17 +86,77 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(canDraw);
+            
         }
         else
         {
-            this.canDraw = (bool)stream.ReceiveNext();
+           
+        }
+    }
+
+    public void UpdateStatesForNewPlayerRPC()
+    {
+        this.photonView.RPC("UpdateStatesForNewPlayerMasterClient", RpcTarget.MasterClient);
+    }
+
+    [PunRPC]
+    public void UpdateStatesForNewPlayerMasterClient()
+    {
+        this.photonView.RPC("UpdateStatesForNewPlayer", RpcTarget.All, PauseDraw, CanDraw, ShowAllPlayers, ShowOwnGroup, SeeOwnHands);
+    }
+
+    [PunRPC]
+    private void UpdateStatesForNewPlayer(bool pauseDraw, bool candraw, bool showallplayers, bool showowngroup, bool seeownhands)
+    {
+        PauseDraw = pauseDraw;
+        CanDraw = candraw;
+        ShowAllPlayers = showallplayers;
+        ShowOwnGroup = showowngroup;
+        SeeOwnHands = seeownhands;
+
+        if (OwningPlayer)
+        {
+            if (PauseDraw)
+            OwningPlayer.PlayOrPauseParticlesRPC(false);
+
+            if (!CanDraw)
+                this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, false);
+
+            if (!ShowAllPlayers && !ShowOwnGroup)
+            {
+                this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, true);
+            }
+            else if (!ShowAllPlayers)
+            {
+                this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, false);
+            }
+            else if (ShowAllPlayers)
+            {
+                this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, true);
+            }
+
+            if (SeeOwnHands)
+            {
+                this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, true);
+            }
+            else
+            {
+                this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
+            }
+
         }
     }
 
     [PunRPC]
     private void PausePlayerParticleSystems(bool play)
     {
+
+        PauseDraw = !play;
+
+        if (!play)
+        {
+            CanDraw = false;
+        }
         if (OwningPlayer)
         {
             OwningPlayer.PlayOrPauseParticlesRPC(play);
@@ -98,6 +166,11 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void ChangeDrawModeForPlayers(bool canIDraw)
     {
+        CanDraw = canIDraw;
+
+        if (canIDraw)
+            PauseDraw = false;
+
         if (OwningPlayer)
         {
             OwningPlayer.DisableOrEnableParticlesRPC(canIDraw); ;
@@ -107,6 +180,18 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void HideOtherPlayersFormOwningPlayer(bool HideGroup)
     {
+        if (HideGroup)
+        {
+            ShowAllPlayers = false;
+            ShowOwnGroup = false;
+            ShowOtherGroup = false;
+        }
+        else
+        {
+            ShowAllPlayers = false;
+            ShowOtherGroup = false;
+        }
+
         if (OwningPlayer)
         {
             OwningPlayer.FindAndHideOtherPlayers(HideGroup);
@@ -114,11 +199,25 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    private void ShowOtherPlayersFormOwningPlayer(bool ShowGroup)
+    private void ShowOtherPlayersFormOwningPlayer(bool AlsoShowOtherGroup)
     {
+        if (AlsoShowOtherGroup)
+        {
+            ShowAllPlayers = true;
+            ShowOwnGroup = true;
+            ShowOtherGroup = true;
+        }
+        else
+        {
+            ShowOwnGroup = true;
+
+            if (ShowOtherGroup)
+                ShowAllPlayers = true;
+        }
+
         if (OwningPlayer)
         {
-            OwningPlayer.FindAndShowOtherPlayers(ShowGroup);
+            OwningPlayer.FindAndShowOtherPlayers(ShowOtherGroup);
         }  
     }
 
@@ -126,6 +225,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void SpawnDrawIndicatorForPlayers()
     {
+        DrawIndicatorCount++;
+
         if (OwningPlayer)
         {
             OwningPlayer.SpawnDrawIndicator();
@@ -136,6 +237,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void ShowHandsForPlayers(bool show)
     {
+
+        SeeOwnHands = show;
         if (OwningPlayer)
         {
             if (show)

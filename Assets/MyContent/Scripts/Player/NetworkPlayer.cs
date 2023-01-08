@@ -13,6 +13,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [Header("GameObjects")]
     [SerializeField] private GameObject HandMeshL;
     [SerializeField] private GameObject HandMeshR;
+    [SerializeField] private SkinnedMeshRenderer HandMeshLSkinnedMeshRenderer;
+    [SerializeField] private SkinnedMeshRenderer HandMeshRSkinnedMeshRenderer;
     [SerializeField] private GameObject ParticleMeshL;
     [SerializeField] private GameObject ParticleMeshR;
     [SerializeField] private GameObject HandTransforms;
@@ -43,9 +45,11 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
     public PlayerGroup group;
 
-    [HideInInspector]public PhotonView thisphotonView;
+    [HideInInspector] public PhotonView thisphotonView;
     private string handStateL;
     private string handStateR;
+    private bool isLeftValid;
+    private bool isRightValid;
 
     // Start is called before the first frame update
     void Awake()
@@ -171,7 +175,48 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         handStateL = WXRGestureHand.GetSingleHandGesture(true);
         handStateR = WXRGestureHand.GetSingleHandGesture(false);
 
+        CheckIfHandsShouldBeVisibleForOthers();
         CheckForDraw();
+    }
+
+    private void CheckIfHandsShouldBeVisibleForOthers()
+    {
+        if (thisphotonView.IsMine)
+        {
+            bool isLVisible = HandMeshLSkinnedMeshRenderer.isVisible;
+            bool isRVisible = HandMeshRSkinnedMeshRenderer.isVisible;
+            
+            if (isLeftValid != isLVisible)
+            {
+                isLeftValid = isLVisible;
+                ShowParticleHandsForOthersRPC(true, isLeftValid);
+            }
+
+            if (isRightValid != isRVisible)
+            {
+                isRightValid = isRVisible;
+                ShowParticleHandsForOthersRPC(false, isRightValid);
+            }
+            
+        }
+    }
+
+    public void ShowParticleHandsForOthersRPC(bool isLeft, bool show)
+    {
+        thisphotonView.RPC("HideParticleHandsForOthers", RpcTarget.Others, isLeft, show);
+    }
+
+    [PunRPC]
+    public void HideParticleHandsForOthers(bool isLeft, bool show)
+    {
+        if (isLeft)
+        {
+            ParticleMeshL.GetComponent<SkinnedMeshRenderer>().enabled = show;
+        }
+        else
+        {
+            ParticleMeshR.GetComponent<SkinnedMeshRenderer>().enabled = show;
+        }   
     }
 
     public void DisableOrEnableParticlesRPC(bool canIDraw)
@@ -179,10 +224,7 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         thisphotonView.RPC("DisableOrEnableParticles", RpcTarget.All, canIDraw);
     }
 
-    public void PlayOrPauseParticlesRPC(bool play)
-    {
-        thisphotonView.RPC("PlayOrPauseParticleSystems", RpcTarget.All, play);
-    }
+    
 
     [PunRPC]
     public void DisableOrEnableParticles(bool canIDraw)
@@ -333,6 +375,11 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
+    public void PlayOrPauseParticlesRPC(bool play)
+    {
+        thisphotonView.RPC("PlayOrPauseParticleSystems", RpcTarget.All, play);
+    }
+
     [PunRPC]
     private void PlayOrPauseParticleSystems(bool play)
     {
@@ -448,6 +495,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
         GameObject g = Instantiate(DrawIndicatorPrefabs[DrawIndicatorIndex], Camera.transform.position, Camera.transform.rotation, Camera.transform);
         drawIndicator = g.GetComponent<DrawIndicator>();
+
+        //Vector3 spawnDirection = (new Vector3 (0, Camera.transform.position.y,0) - Camera.transform.position).normalized;
 
         drawIndicator.transform.localPosition += new Vector3(0, -0.2f, 1) * .5f;
         drawIndicator.transform.localRotation = Quaternion.Euler(0, 180, 0);

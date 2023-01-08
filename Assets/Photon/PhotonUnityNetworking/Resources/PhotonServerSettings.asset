@@ -88,6 +88,10 @@ MonoBehaviour:
   - UpgradePlayerGroupsToMasterClient
   - SetupNewDrawIndicaor
   - SetupNewDrawIndicator
+  - SendPlayerVariables
+  - UpdateStatesForNewPlayer
+  - HideParticleHandsForOthers
+  - UpdateStatesForNewPlayerMasterClient
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

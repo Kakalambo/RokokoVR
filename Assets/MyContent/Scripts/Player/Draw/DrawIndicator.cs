@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class DrawIndicator : MonoBehaviour
 {
-
+    
     [SerializeField] private float drawStepsBetweenPoints = 1000;
     [SerializeField] private float drawSpeed = 2;
     [SerializeField]private ParticleSystem particle;
     private LineRenderer[] lineRenderers;
+    public int maxLoops = 3;
+    private int counter;
     // Start is called before the first frame update
     void Start()
     {
         StartIndicatingPath();
-        DestroyIndicator(30);
+        DestroyIndicator(120);
     }
 
     // Update is called once per frame
@@ -69,7 +71,17 @@ public class DrawIndicator : MonoBehaviour
             particle.Stop();
             yield return new WaitForSeconds(.5f);
         }
-        StartIndicatingPath();
+
+        counter++;
+        if (counter >= maxLoops)
+        {
+            DestroyIndicator(0);
+        }
+        else
+        {
+            StartIndicatingPath();
+        }
+        
     }
 
     public void DestroyIndicator(float timeTillDestruction)

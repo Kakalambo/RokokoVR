@@ -38,7 +38,9 @@ public class NetworkSpawner : MonoBehaviour
         NetworkPlayer n = g.GetComponent<NetworkPlayer>();
         SpawnPlace s = spawnPlaces[count];
         n.spawnPlace = s;
-        FindObjectOfType<PlayerController>().UpgradePlayerGroupsRPC();
+        PlayerController p = FindObjectOfType<PlayerController>();
+        p.UpgradePlayerGroupsRPC();
+        p.UpdateStatesForNewPlayerRPC();
 #endif
     }
 }
