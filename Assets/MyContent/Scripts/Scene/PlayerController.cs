@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     [Header("Draw Variables")]
     public bool CanDraw = true;
+    public bool ShowOtherDraw = true;
+    public bool ShowGroupDraw = true;
     public bool PauseDraw = false;
     public int DrawIndicatorCount = 0;
 
@@ -30,54 +32,69 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if(Input.anyKeyDown)
         {
-            this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, true);
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, false);
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, true);
-        }
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, false);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, false);
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, true);
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, false);
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, true);
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            UpgradeDrawIndicatorsToMasterClient();
-            this.photonView.RPC("SpawnDrawIndicatorForPlayers", RpcTarget.All);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, true);
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
-        }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            UpgradePlayerGroupsToMasterClient();
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, true);
+            }
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                this.photonView.RPC("HideOtherPlayersFormOwningPlayer", RpcTarget.All, false);
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, true);
+            }
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                this.photonView.RPC("ShowOtherPlayersFormOwningPlayer", RpcTarget.All, false);
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, false);
+            }
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                this.photonView.RPC("ChangeDrawModeForOtherPlayers", RpcTarget.All, false, true);
+            }
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                this.photonView.RPC("ChangeDrawModeForOtherPlayers", RpcTarget.All, true, false);
+            }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                this.photonView.RPC("ChangeDrawModeForOtherPlayers", RpcTarget.All, true, true);
+            }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                this.photonView.RPC("ChangeDrawModeForPlayers", RpcTarget.All, true);
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, false);
+            }
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                this.photonView.RPC("PausePlayerParticleSystems", RpcTarget.All, true);
+            }
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                UpgradeDrawIndicatorsToMasterClient();
+                this.photonView.RPC("SpawnDrawIndicatorForPlayers", RpcTarget.All);
+            }
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, true);
+            }
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
+            }
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                UpgradePlayerGroupsToMasterClient();
+            }
         }
     }
 
@@ -102,17 +119,19 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void UpdateStatesForNewPlayerMasterClient()
     {
-        this.photonView.RPC("UpdateStatesForNewPlayer", RpcTarget.All, PauseDraw, CanDraw, ShowAllPlayers, ShowOwnGroup, SeeOwnHands);
+        this.photonView.RPC("UpdateStatesForNewPlayer", RpcTarget.All, PauseDraw, CanDraw, ShowAllPlayers, ShowOwnGroup, SeeOwnHands, ShowGroupDraw, ShowOtherDraw);
     }
 
     [PunRPC]
-    private void UpdateStatesForNewPlayer(bool pauseDraw, bool candraw, bool showallplayers, bool showowngroup, bool seeownhands)
+    private void UpdateStatesForNewPlayer(bool pauseDraw, bool candraw, bool showallplayers, bool showowngroup, bool seeownhands, bool showowndraw, bool showotherdraw)
     {
         PauseDraw = pauseDraw;
         CanDraw = candraw;
         ShowAllPlayers = showallplayers;
         ShowOwnGroup = showowngroup;
         SeeOwnHands = seeownhands;
+        ShowGroupDraw = showowndraw;
+        ShowOtherDraw = showotherdraw;
 
         if (OwningPlayer)
         {
@@ -143,6 +162,10 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             {
                 this.photonView.RPC("ShowHandsForPlayers", RpcTarget.All, false);
             }
+
+            this.photonView.RPC("ChangeDrawModeForOtherPlayers", RpcTarget.All, showotherdraw, true);
+            this.photonView.RPC("ChangeDrawModeForOtherPlayers", RpcTarget.All, showowndraw, false);
+
 
         }
     }
@@ -175,6 +198,32 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         {
             OwningPlayer.DisableOrEnableParticlesRPC(canIDraw); ;
         }   
+    }
+
+    [PunRPC]
+    private void ChangeDrawModeForOtherPlayers(bool canPDraw, bool AlsoEffectOtherGroup)
+    {
+        if (AlsoEffectOtherGroup)
+        {
+            ShowOtherDraw = canPDraw;
+        }
+        
+        ShowGroupDraw = canPDraw;
+        NetworkPlayer[] nPlayers = FindObjectsOfType<NetworkPlayer>();
+        foreach (NetworkPlayer n in nPlayers)
+        {
+            if (n == OwningPlayer)
+                return;
+
+            if (AlsoEffectOtherGroup)
+            {
+                n.SetParticleLocally(canPDraw);
+            }
+            else if (n.group.GroupID == OwningPlayer.group.GroupID)
+            {
+                n.SetParticleLocally(canPDraw);
+            }
+        }
     }
 
     [PunRPC]

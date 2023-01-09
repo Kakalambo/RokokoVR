@@ -67,15 +67,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _1_Threshold: 2
-    - _2_Threshold: 0.8
+    - _1_Threshold: 0
+    - _2_Threshold: 0
     - _3_Brightness: 2
     - _3_Liquid_Scale: 3.63
     - _3_Speed_Main_X: 0.1
     - _3_Speed_Main_Y: 0.1
     - _3_Threshold: 2
     - _3_Tint_Offset: 1.7
-    - _4_Threshold: 0.45
+    - _4_Threshold: 0
     - _4_Tint_Offset: 1.7
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
@@ -83,7 +83,7 @@ Material:
     - _Fader_1_2_3_4: 1
     - _Fader_3_4: 1
     - _NoiseScale: 0.511811
-    - _Threshold_Deform: 0.45
+    - _Threshold_Deform: 2
     - _TimeSpeed: 0.511811
     m_Colors:
     - _1_Lower_Tex_Offset: {r: 3, g: 3, b: 0, a: 0}

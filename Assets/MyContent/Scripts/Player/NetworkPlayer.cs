@@ -183,8 +183,14 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     {
         if (thisphotonView.IsMine)
         {
-            bool isLVisible = HandMeshLSkinnedMeshRenderer.isVisible;
-            bool isRVisible = HandMeshRSkinnedMeshRenderer.isVisible;
+            bool isLTracking = ((HandManager.Instance != null) &&
+                            (HandManager.Instance.IsHandPoseValid(true)));
+
+            bool isRTracking = ((HandManager.Instance != null) &&
+                            (HandManager.Instance.IsHandPoseValid(false)));
+
+            bool isLVisible = HandMeshL.activeSelf && isLTracking;
+            bool isRVisible = HandMeshR.activeSelf&& isRTracking;
             
             if (isLeftValid != isLVisible)
             {
@@ -203,12 +209,15 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
     public void ShowParticleHandsForOthersRPC(bool isLeft, bool show)
     {
-        thisphotonView.RPC("HideParticleHandsForOthers", RpcTarget.Others, isLeft, show);
+        thisphotonView.RPC("HideParticleHandsForOthers", RpcTarget.All, isLeft, show);
     }
 
     [PunRPC]
     public void HideParticleHandsForOthers(bool isLeft, bool show)
     {
+        if (thisphotonView.IsMine)
+            return;
+
         if (isLeft)
         {
             ParticleMeshL.GetComponent<SkinnedMeshRenderer>().enabled = show;
@@ -225,6 +234,18 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     }
 
     
+
+    public void SetParticleLocally(bool enable)
+    {
+        particleL.gameObject.SetActive(enable);
+        particleR.gameObject.SetActive(enable);
+
+        if (enable)
+        {
+            particleL.Play();
+            particleR.Play();
+        }
+    }
 
     [PunRPC]
     public void DisableOrEnableParticles(bool canIDraw)
@@ -493,14 +514,16 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             drawIndicator.DestroyIndicator(0);
         }
 
-        GameObject g = Instantiate(DrawIndicatorPrefabs[DrawIndicatorIndex], Camera.transform.position, Camera.transform.rotation, Camera.transform);
+        Vector3 spawnDirection = (new Vector3(0, Camera.transform.position.y, 0) - Camera.transform.position).normalized;
+        Vector3 spawnPosition = Camera.transform.position + (spawnDirection * .4f);
+        Quaternion spawnRotation = Quaternion.LookRotation(spawnDirection* -1, Vector3.up);
+
+
+        GameObject g = Instantiate(DrawIndicatorPrefabs[DrawIndicatorIndex], spawnPosition, spawnRotation);
         drawIndicator = g.GetComponent<DrawIndicator>();
 
-        //Vector3 spawnDirection = (new Vector3 (0, Camera.transform.position.y,0) - Camera.transform.position).normalized;
+        g.transform.position += (Vector3.down * 0f) * g.transform.lossyScale.y;
 
-        drawIndicator.transform.localPosition += new Vector3(0, -0.2f, 1) * .5f;
-        drawIndicator.transform.localRotation = Quaternion.Euler(0, 180, 0);
-        drawIndicator.transform.parent = null;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
