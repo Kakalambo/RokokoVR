@@ -115,7 +115,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             particleL.gameObject.transform.SetParent(transform);
             particleR.gameObject.transform.SetParent(transform);
             HandTransforms.SetActive(false);
-            Camera.SetActive(false);
+            Camera.GetComponent<Camera>().enabled = false;
+            Camera.GetComponent<AudioListener>().enabled = false;
         }
         else
         {
@@ -507,20 +508,32 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         HandMeshR.SetActive(false);
     }
 
-    public void SpawnDrawIndicator()
+    public void SpawnDrawIndicator(float scaleMulti)
     {
         if (drawIndicator != null)
         {
             drawIndicator.DestroyIndicator(0);
         }
 
-        Vector3 spawnDirection = (new Vector3(0, Camera.transform.position.y, 0) - Camera.transform.position).normalized;
-        Vector3 spawnPosition = Camera.transform.position + (spawnDirection * .4f);
+        Vector3 camPos;
+
+        if (thisphotonView.IsMine)
+        {
+            camPos = Camera.transform.position;
+        }
+        else
+        {
+            camPos = PlayerModelHead.transform.position;
+        }
+
+        Vector3 spawnDirection = (new Vector3(0, camPos.y, 0) - camPos).normalized;
+        Vector3 spawnPosition = camPos + (spawnDirection * .5f);
         Quaternion spawnRotation = Quaternion.LookRotation(spawnDirection* -1, Vector3.up);
 
 
         GameObject g = Instantiate(DrawIndicatorPrefabs[DrawIndicatorIndex], spawnPosition, spawnRotation);
         drawIndicator = g.GetComponent<DrawIndicator>();
+        drawIndicator.scaleMuti = scaleMulti;
 
         g.transform.position += (Vector3.down * 0f) * g.transform.lossyScale.y;
 

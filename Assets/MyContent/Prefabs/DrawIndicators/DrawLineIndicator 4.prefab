@@ -48,10 +48,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawStepsBetweenPoints: 1000
-  drawSpeed: 3
+  drawSpeed: 2
   particle: {fileID: 2062154695005205924}
   maxLoops: 3
   offsetVector: {x: 0, y: -0.02, z: 0}
+  scaleMuti: 1
 --- !u!1 &2385814716878584998
 GameObject:
   m_ObjectHideFlags: 0

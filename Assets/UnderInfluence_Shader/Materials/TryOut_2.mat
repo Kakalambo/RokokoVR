@@ -59,12 +59,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _2_1_Threshold: 0
+    - _2_1_Threshold: 2
     - _2_2_Threshold: 1.023622
     - _2_4_Threshold: 0
-    - _2_Fader_1_2: 1
-    - _2_Fader_1_2_3_4: 1
-    - _2_Fader_3_4: 1
+    - _2_Fader_1_2: 0
+    - _2_Fader_1_2_3_4: 0
+    - _2_Fader_3_4: 0
     - _2_NoiseScale: 0.511811
     - _2_Threshold_Deform: 0
     - _2_TimeSpeed: 0.511811

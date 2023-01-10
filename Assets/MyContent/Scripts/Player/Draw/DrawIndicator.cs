@@ -13,6 +13,7 @@ public class DrawIndicator : MonoBehaviour
     public Vector3 offsetVector;
     private int counter;
     private Vector3 scale;
+    public float scaleMuti = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -46,7 +47,7 @@ public class DrawIndicator : MonoBehaviour
 
     private Vector3 ScalePosition(Vector3 pos)
     {
-        Vector3 newPos = new Vector3(pos.x * scale.x, pos.y * scale.y, pos.z * scale.z);
+        Vector3 newPos = new Vector3(pos.x * (scale.x * scaleMuti), pos.y * (scale.y * scaleMuti), pos.z * (scale.z* scaleMuti));
         newPos += offsetVector;
         return newPos;
     }
