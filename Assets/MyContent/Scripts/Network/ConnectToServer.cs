@@ -41,6 +41,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
         return;
 #endif
 
+        PhotonNetwork.JoinRoom("Room 1");
         //PhotonNetwork.JoinOrCreateRoom("Room 1", roomOptions, TypedLobby.Default);
 
     }

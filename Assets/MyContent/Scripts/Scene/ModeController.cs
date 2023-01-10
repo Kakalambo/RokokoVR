@@ -100,7 +100,7 @@ public class ModeController : MonoBehaviour
                 shaderControl.enabled = false;
                 shaderClient.enabled = true;
 
-                GameObject.Find("StreamCamera").SetActive(true);
+                GameObject.Find("StreamCamera").GetComponent<Camera>().enabled = true;
                 GameObject.Find("Hierarchy_UI").SetActive(false);
                 GameObject.Find("[VRModule]").SetActive(false);
                 break;
