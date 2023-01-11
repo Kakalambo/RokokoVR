@@ -27,6 +27,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
     [Header("Drawing")]
     [SerializeField] private ParticleSystem particleL;
     [SerializeField] private ParticleSystem particleR;
+    [SerializeField] private AudioSource DrawSoundL;
+    [SerializeField] private AudioSource DrawSoundR;
     [SerializeField] private GameObject[] DrawIndicatorPrefabs;
     [SerializeField] public int DrawIndicatorIndex = 0;
     public PlayerGroup[] PlayerGroups;
@@ -197,12 +199,18 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             {
                 isLeftValid = isLVisible;
                 ShowParticleHandsForOthersRPC(true, isLeftValid);
+
+                if(!isLeftValid)
+                thisphotonView.RPC("SetParticleSystemL", RpcTarget.All, false);
             }
 
             if (isRightValid != isRVisible)
             {
                 isRightValid = isRVisible;
                 ShowParticleHandsForOthersRPC(false, isRightValid);
+
+                if (!isRightValid)
+                thisphotonView.RPC("SetParticleSystemR", RpcTarget.All, false);
             }
             
         }
@@ -241,10 +249,20 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
         particleL.gameObject.SetActive(enable);
         particleR.gameObject.SetActive(enable);
 
+        
+
         if (enable)
         {
             particleL.Play();
             particleR.Play();
+
+            PlayDrawSound(true, true);
+            PlayDrawSound(false, true);
+        }
+        else
+        {
+            PlayDrawSound(true, false);
+            PlayDrawSound(false, false);
         }
     }
 
@@ -269,6 +287,10 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             {
                 drawIndicator.DestroyIndicator(0);
             }
+
+            PlayDrawSound(true, false);
+            PlayDrawSound(false, false);
+
         }
         else
         {
@@ -281,6 +303,9 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             var emissionR = particleR.emission;
             emissionL.enabled = true;
             emissionR.enabled = true;
+
+            PlayDrawSound(true, true);
+            PlayDrawSound(false, true);
         }
     }
 
@@ -359,6 +384,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
                 //particleL.Play();
                 isEmittingL = true;
                 emissionL.enabled = true;
+
+                PlayDrawSound(true, true);
             }
         }
         else
@@ -367,6 +394,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             {
                 isEmittingL = false;
                 emissionL.enabled = false;
+
+                PlayDrawSound(true, false);
             }
         }
     }
@@ -383,6 +412,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
                 //particleR.Play();
                 isEmittingR = true;
                 emissionR.enabled = true;
+
+                PlayDrawSound(false, true);
             }
             
         }
@@ -392,6 +423,8 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             {
                 isEmittingR = false;
                 emissionR.enabled = false;
+
+                PlayDrawSound(false, false);
             }
             
         }
@@ -399,22 +432,31 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
 
     public void PlayOrPauseParticlesRPC(bool play)
     {
-        thisphotonView.RPC("PlayOrPauseParticleSystems", RpcTarget.All, play);
+        thisphotonView.RPC("PlayOrPauseParticleSystems", RpcTarget.All, play, canDraw);
     }
 
     [PunRPC]
-    private void PlayOrPauseParticleSystems(bool play)
+    private void PlayOrPauseParticleSystems(bool play, bool candraw)
     {
         if (play)
         {
             particleR.Play();
             particleL.Play();
+
+            if (!candraw)
+            {
+                SetParticleSystemL(false);
+                SetParticleSystemR(false);
+            }
         }
         else
         {
             canDraw = false;
             particleR.Pause();
             particleL.Pause();
+
+            PlayDrawSound(true, false);
+            PlayDrawSound(false, false);
         }
     }
 
@@ -557,6 +599,32 @@ public class NetworkPlayer : MonoBehaviourPun, IPunObservable
             {
                // oldID = group.GroupID;
                 //SetupForGroup(group.GroupID, this.playerColor.x, this.playerColor.y, this.playerColor.z, 255);
+            }
+        }
+    }
+
+    private void PlayDrawSound(bool isLeft, bool play)
+    {
+        if (isLeft)
+        {
+            if (!DrawSoundL.isPlaying && play && canDraw)
+            {
+                DrawSoundL.Play();
+            }
+            else if (DrawSoundL.isPlaying && !play)
+            {
+                DrawSoundL.Stop();
+            }
+        }
+        else
+        {
+            if (!DrawSoundR.isPlaying && play && canDraw)
+            {
+                DrawSoundR.Play();
+            }
+            else if (DrawSoundR.isPlaying && !play)
+            {
+                DrawSoundR.Stop();
             }
         }
     }
